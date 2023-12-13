@@ -8,8 +8,8 @@ pub fn create_db() -> Result<()> {
         player_id INTEGER PRIMARY KEY,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
-        wallet_balance REAL NOT NULL DEFAULT 0.0,
-        crypto_wallet_address TEXT
+        balance REAL NOT NULL DEFAULT 0.0,
+        crypto_wallet_address TEXT DEFAULT NILL
     )";
     let mut stmt = conn.prepare(create_players_table)?;
     stmt.execute([])?;
