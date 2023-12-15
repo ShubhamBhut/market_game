@@ -5,10 +5,10 @@ player:
  - real estate portfolio
 
 Bank:
- - check balance
- - withdraw
- - deposit
- - transfer
+ - [x] check balance
+ - [x] withdraw
+ - [x] deposit
+ - [x] transfer
 
 Stocks:
  - brokergae
