@@ -9,25 +9,23 @@ fn sufficient_balance(player_id: u32) -> bool {
     true
 }
 
-fn setup_test() -> BankDatabase {
-        let connection = Connection::open("test.sqli").expect("Failed to create database connection");
-        BankDatabase { connection }
-    }
-
-bank_db = Bankdatabase { Connection::open("database.db").expect("Failed to create database connection")};
-
 impl StockDatabase {
     pub fn connection() -> Result<Self> {
         let connection = Connection::open("database.db")?;
-        Ok(Self { connection })
+        Ok(Self { connection})
     }
 
-    pub fn buy(player_id: u32, stock_id: u32, quantity: u32) ->Result<()> {
+    pub fn current_price(&self, stock_id: u32) -> Result<u32> {
+        Ok(1)
+    }
+
+    pub fn buy(&self, player_id: u32, stock_id: u32, quantity: u32, bank_db: &BankDatabase) ->Result<String> {
         if sufficient_balance(player_id){
-            let amount = current_price(stock_id) * quantity;
-            BankDatabase::add_balance(bank_db, player_id, amount)
+            let amount = self.current_price(stock_id).unwrap() * quantity;
+            let _ = BankDatabase::add_balance(bank_db, player_id, amount as i32);
+            Ok(format!("{quantity} shares bought at total expense of {amount}"))
         } else {
-            Ok("Not enough money bruh")
+            Ok("Not enough money bruh".to_string())
         }
     }
 }

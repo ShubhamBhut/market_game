@@ -57,7 +57,7 @@ mod tests {
     use super::*;
 
     fn setup_test() -> BankDatabase {
-        let connection = Connection::open("e.sqli").expect("Failed to create database connection");
+        let connection = Connection::open("test.sqli").expect("Failed to create database connection");
         BankDatabase { connection }
     }
 
