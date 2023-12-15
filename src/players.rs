@@ -1,7 +1,7 @@
 use rusqlite::{Connection, Result};
 
-struct BankDatabase {
-    connection: Connection,
+pub struct BankDatabase {
+    pub connection: Connection,
 }
 
 impl BankDatabase {
@@ -33,13 +33,13 @@ impl BankDatabase {
             .ok_or(rusqlite::Error::QueryReturnedNoRows)?
     }
 
-    fn add_balance(&self, receiver_id: u32, amount: i32) -> Result<()> {
+    pub fn add_balance(&self, receiver_id: u32, amount: i32) -> Result<()> {
         let query = "UPDATE Players SET balance = balance + (?2) WHERE player_id = (?1)";
         self.connection.execute(query, (receiver_id, amount))?;
         Ok(())
     }
 
-    fn transfer(&self, sender_id: u32, receiver_id: u32, amount: u32) ->Result<()> {
+    pub fn transfer(&self, sender_id: u32, receiver_id: u32, amount: u32) ->Result<()> {
         let _= self.add_balance(sender_id, -1*(amount as i32));
         let _= self.add_balance(receiver_id, amount as i32);
         Ok(())
@@ -57,7 +57,7 @@ mod tests {
     use super::*;
 
     fn setup_test() -> BankDatabase {
-        let connection = Connection::open("test.sqli").expect("Failed to create database connection");
+        let connection = Connection::open("e.sqli").expect("Failed to create database connection");
         BankDatabase { connection }
     }
 
