@@ -8,7 +8,7 @@ pub fn create_db() -> Result<()> {
         player_id INTEGER PRIMARY KEY,
         username TEXT UNIQUE NOT NULL,
         password TEXT NOT NULL,
-        balance REAL NOT NULL DEFAULT 0.0,
+        balance INTEGER NOT NULL DEFAULT 0.0,
         crypto_wallet_address TEXT DEFAULT NILL
     )";
     let mut stmt = conn.prepare(create_players_table)?;
@@ -19,9 +19,9 @@ pub fn create_db() -> Result<()> {
         stock_id INTEGER PRIMARY KEY,
         symbol TEXT UNIQUE NOT NULL,
         name TEXT NOT NULL,
-        current_price REAL NOT NULL,
+        current_price INTEGER NOT NULL,
         quantity INTEGER NOT NULL DEFAULT 0,
-        brokerage_fee REAL NOT NULL DEFAULT 0.0
+        brokerage_fee INTEGER NOT NULL DEFAULT 0.0
     )";
     let mut stmt = conn.prepare(create_stocks_table)?;
     stmt.execute([])?;
@@ -41,8 +41,8 @@ pub fn create_db() -> Result<()> {
         property_id INTEGER PRIMARY KEY,
         name TEXT NOT NULL,
         description TEXT,
-        price REAL NOT NULL,
-        rent_amount REAL NOT NULL,
+        price INTEGER NOT NULL,
+        rent_amount INTEGER NOT NULL,
         owner_id INTEGER NOT NULL REFERENCES Players(player_id)
     )";
     let mut stmt = conn.prepare(create_real_estate_table)?;
@@ -75,7 +75,7 @@ pub fn create_db() -> Result<()> {
     let create_transactions_table = "CREATE TABLE Transactions (
         transaction_id INTEGER PRIMARY KEY,
         type TEXT NOT NULL,
-        amount REAL NOT NULL,
+        amount INTEGER NOT NULL,
         timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
         player_id INTEGER NOT NULL REFERENCES Players(player_id),
         other_player_id INTEGER REFERENCES Players(player_id),
