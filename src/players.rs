@@ -1,7 +1,21 @@
 use rusqlite::{Connection, Result};
+use std::error::Error;
 
 pub struct BankDatabase {
     pub connection: Connection,
+}
+
+#[derive(Debug)]
+pub struct BankDatabaseError {
+    pub message: String,
+}
+
+impl Error for BankDatabaseError {}
+
+impl std::fmt::Display for BankDatabaseError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Bank database error: {}", self.message)
+    }
 }
 
 impl BankDatabase {
@@ -33,21 +47,44 @@ impl BankDatabase {
             .ok_or(rusqlite::Error::QueryReturnedNoRows)?
     }
 
-    pub fn add_balance(&self, receiver_id: u32, amount: i32) -> Result<()> {
+    pub fn add_balance(&self, player_id: u32, amount: u32) -> Result<()> {
         let query = "UPDATE Players SET balance = balance + (?2) WHERE player_id = (?1)";
-        self.connection.execute(query, (receiver_id, amount))?;
+        self.connection.execute(query, (player_id, amount))?;
         Ok(())
     }
 
+    pub fn sufficient_balance(&self, player_id: u32, required_balance: u32) ->Result<bool, BankDatabaseError> {
+        let player_balance = self.check_balance(player_id);
+
+        if player_balance.unwrap() >= required_balance {
+           Ok(true)
+        } else {
+            Err(BankDatabaseError { message: "Insufficient Funds".to_string() })
+        }
+    }
+
+    pub fn withdraw_balance(&self, player_id: u32, amount: u32) -> Result<()> {
+        if self.sufficient_balance(player_id, amount).unwrap(){
+            let query = "UPDATE Players SET balance = balance - (?2) WHERE player_id = (?1)";
+            self.connection.execute(query, (player_id, amount))?;
+        } 
+       Ok(())
+    }
+
     pub fn transfer(&self, sender_id: u32, receiver_id: u32, amount: u32) ->Result<()> {
-        let _= self.add_balance(sender_id, -1*(amount as i32));
-        let _= self.add_balance(receiver_id, amount as i32);
+        let _= self.withdraw_balance(sender_id, amount);
+        let _= self.add_balance(receiver_id, amount);
         Ok(())
     }
 
     pub fn donate(&self, sender_id: u32, receiver_id: u32, amount: u32) -> Result<String> {
         self.transfer(sender_id, receiver_id, amount)?;
         Ok(format!("{amount} has been donated to {receiver_id} from {sender_id}"))
+    }
+
+    pub fn charge_commission(&self, player_id: u32, amount: u32) ->Result<()> {
+        let query = "UPDATE Plyaers SET balance = balance - (?2) WHERE player_id = (?1)";
+        Ok(())
     }
 }
 

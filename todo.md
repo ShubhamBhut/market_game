@@ -1,2 +1,1 @@
-- Add donate function actions into transaction table
-- make all banking functions secure, e.g. withdraw only if sufficient funds etc.
+- Write proper test functions for players.rs
