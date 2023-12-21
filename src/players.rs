@@ -82,8 +82,10 @@ impl BankDatabase {
         Ok(format!("{amount} has been donated to {receiver_id} from {sender_id}"))
     }
 
-    pub fn charge_commission(&self, player_id: u32, amount: u32) ->Result<()> {
+    pub fn charge_commission(&self, player_id: u32, amount: u32, commission_percent: u32) ->Result<()> {
+        let commission_amount = (commission_percent * amount) / 100;
         let query = "UPDATE Plyaers SET balance = balance - (?2) WHERE player_id = (?1)";
+        self.connection.execute(query, (player_id, commission_amount))?;
         Ok(())
     }
 }
